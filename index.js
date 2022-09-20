@@ -3,13 +3,14 @@ const express = require('express');
 const bodyparser = require('body-parser');
 var app = express();
 
-app.use(bodyParser.json());
+app.use(bodyparser.json());
 
 var mysqlConnection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'root123',
-    database: 'university'
+    database: 'university',
+   multipleStatements: true
 });
 
 mysqlConnection.connect((err)=>{
@@ -46,7 +47,39 @@ app.get('/students/:id', (req, res) => {
 app.delete('/students/:id', (req, res) => {
     mysqlConnection.query('DELETE FROM students WHERE id = ?', [req.params.id], (err, rows, fields) => {
         if (!err)
-            res.send('Deleted successfully.');
+            res.send('Deleted successfully the student whit the id : ' + element[0].id);
+        else
+            console.log(err);
+    })
+});
+
+
+app.post('/students', (req, res) => {
+    let student = req.body;
+    var sql = "SET @id = ?;SET @document_number = ?;SET @document_type = ?;SET @name = ?;SET @surname = ?;SET @state = ?; \
+    CALL StudentAddOrEdit(@id,@document_number,@document_type,@name,@surname,@state);";
+    mysqlConnection.query(sql, [student.id, student.document_number, student.document_type, student.name,student.surname,student.state], (err, rows, fields) => {
+        if (!err)
+            rows.forEach(element => {
+                if(element.constructor == Array)
+                res.send('Inserted student id : '+element[0].id);
+            });
+        else
+            console.log(err);
+    })
+});
+
+
+app.put('/students', (req, res) => {
+    let student = req.body;
+    var sql = "SET @id = ?;SET @document_number = ?;SET @document_type = ?;SET @name = ?;SET @surname = ?;SET @state = ?; \
+    CALL StudentAddOrEdit(@id,@document_number,@document_type,@name,@surname,@state);";
+    mysqlConnection.query(sql, [student.id, student.document_number, student.document_type, student.name,student.surname,student.state], (err, rows, fields) => {
+        if (!err)
+            rows.forEach(element => {
+                if(element.constructor == Array)
+                res.send('Inserted student id : '+element[0].id);
+            });
         else
             console.log(err);
     })
