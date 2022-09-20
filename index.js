@@ -1,6 +1,6 @@
 const mysql = require('mysql');
 const express = require('express');
-const bodyParser = require('body-parser');
+const bodyparser = require('body-parser');
 var app = express();
 
 app.use(bodyparser.json());
@@ -22,7 +22,7 @@ mysqlConnection.connect((err)=>{
 
 app.listen(3000,()=>console.log('Express server is running at port no : 3000'));
 
-//Obtener todos los estudiantes
+
 app.get('/students', (req, res) => {
     mysqlConnection.query('SELECT * FROM students', (err, rows, fields) => {
         if (!err)
@@ -33,7 +33,6 @@ app.get('/students', (req, res) => {
 });
 
 
-//Obtener un estudiante
 app.get('/students/:id', (req, res) => {
     mysqlConnection.query('SELECT * FROM students WHERE id = ?', [req.params.id], (err, rows, fields) => {
         if (!err)
@@ -44,7 +43,7 @@ app.get('/students/:id', (req, res) => {
 });
 
 
-//Eliminar un estudiante
+
 app.delete('/students/:id', (req, res) => {
     mysqlConnection.query('DELETE FROM students WHERE id = ?', [req.params.id], (err, rows, fields) => {
         if (!err)
@@ -77,18 +76,22 @@ app.put('/students', (req, res) => {
     CALL StudentAddOrEdit(@id,@document_number,@document_type,@name,@surname,@state);";
     mysqlConnection.query(sql, [student.id, student.document_number, student.document_type, student.name,student.surname,student.state], (err, rows, fields) => {
         if (!err)
-            rows.forEach(element => {
-                if(element.constructor == Array)
-                res.send('Inserted student id : '+element[0].id);
-            });
-        else
+                res.send('Updated succesfully');
+         else
             console.log(err);
     })
 });
 
 
+app.get('/subjects', (req, res) => {
+    mysqlConnection.query('SELECT * FROM subjects', (err, rows, fields) => {
+        if (!err)
+            res.send(rows);
+        else
+            console.log(err);
+    })
+});
 
-//MATERIAS
 app.get('/subjects/:id', (req, res) => {
     mysqlConnection.query('SELECT * FROM subjects WHERE id = ?', [req.params.id], (err, rows, fields) => {
         if (!err)
@@ -107,11 +110,32 @@ app.delete('/subjects/:id', (req, res) => {
     })
 });
 
-app.post('/subjects/:id', (req, res) => {
-    var sql = 
-    mysqlConnection.query('DELETE FROM subjects WHERE id = ?', [req.params.id], (err, rows, fields) => {
+app.post('/subjects', (req, res) => {
+    let subject = req.body;
+    var sql = "SET @id = ?;SET @code = ?;SET @name = ?;SET @credits = ?;SET @quotas = ?;SET @state = ?; \
+    CALL SubjectAddOrEdit(@id,@code,@name,@credits,@quotas,@state);";
+    mysqlConnection.query(sql, [subject.id, subject.code, subject.name, subject.credits,subject.quotas,subject.state], (err, rows, fields) => {
         if (!err)
-            res.send('Deleted successfully.');
+            rows.forEach(element => {
+                if(element.constructor == Array)
+                res.send('Inserted subject id : '+element[0].id);
+            });
+        else
+            console.log(err);
+    })
+});
+
+
+app.put('/subjects', (req, res) => {
+    let subject = req.body;
+    var sql = "SET @id = ?;SET @code = ?;SET @name = ?;SET @credits = ?;SET @quotas = ?;SET @state = ?; \
+    CALL SubjectAddOrEdit(@id,@code,@name,@credits,@quotas,@state);";
+    mysqlConnection.query(sql, [subject.id, subject.code, subject.name, subject.credits,subject.quotas,subject.state], (err, rows, fields) => {
+        if (!err)
+            rows.forEach(element => {
+                if(element.constructor == Array)
+                res.send('Updated succesfully');
+            });
         else
             console.log(err);
     })
