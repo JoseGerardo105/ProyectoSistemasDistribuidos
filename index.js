@@ -20,8 +20,34 @@ mysqlConnection.connect((err)=>{
 });
 
 app.listen(3000,()=>console.log('Express server is running at port no : 3000'));
-//app.get('/employees',(res,req)={
 
-//})
 
-hola
+app.get('/students', (req, res) => {
+    mysqlConnection.query('SELECT * FROM students', (err, rows, fields) => {
+        if (!err)
+            res.send(rows);
+        else
+            console.log(err);
+    })
+});
+
+
+app.get('/students/:id', (req, res) => {
+    mysqlConnection.query('SELECT * FROM students WHERE id = ?', [req.params.id], (err, rows, fields) => {
+        if (!err)
+            res.send(rows);
+        else
+            console.log(err);
+    })
+});
+
+
+
+app.delete('/students/:id', (req, res) => {
+    mysqlConnection.query('DELETE FROM students WHERE id = ?', [req.params.id], (err, rows, fields) => {
+        if (!err)
+            res.send('Deleted successfully.');
+        else
+            console.log(err);
+    })
+});
