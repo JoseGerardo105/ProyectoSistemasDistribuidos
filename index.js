@@ -1,6 +1,6 @@
 const mysql = require('mysql');
 const express = require('express');
-const bodyparser = require('body-parser');
+const bodyParser = require('body-parser');
 var app = express();
 
 app.use(bodyParser.json());
@@ -21,7 +21,7 @@ mysqlConnection.connect((err)=>{
 
 app.listen(3000,()=>console.log('Express server is running at port no : 3000'));
 
-
+//Obtener todos los estudiantes
 app.get('/students', (req, res) => {
     mysqlConnection.query('SELECT * FROM students', (err, rows, fields) => {
         if (!err)
@@ -32,6 +32,7 @@ app.get('/students', (req, res) => {
 });
 
 
+//Obtener un estudiante
 app.get('/students/:id', (req, res) => {
     mysqlConnection.query('SELECT * FROM students WHERE id = ?', [req.params.id], (err, rows, fields) => {
         if (!err)
@@ -42,9 +43,40 @@ app.get('/students/:id', (req, res) => {
 });
 
 
-
+//Eliminar un estudiante
 app.delete('/students/:id', (req, res) => {
     mysqlConnection.query('DELETE FROM students WHERE id = ?', [req.params.id], (err, rows, fields) => {
+        if (!err)
+            res.send('Deleted successfully.');
+        else
+            console.log(err);
+    })
+});
+
+
+
+//MATERIAS
+app.get('/subjects/:id', (req, res) => {
+    mysqlConnection.query('SELECT * FROM subjects WHERE id = ?', [req.params.id], (err, rows, fields) => {
+        if (!err)
+            res.send(rows);
+        else
+            console.log(err);
+    })
+});
+
+app.delete('/subjects/:id', (req, res) => {
+    mysqlConnection.query('DELETE FROM subjects WHERE id = ?', [req.params.id], (err, rows, fields) => {
+        if (!err)
+            res.send('Deleted successfully.');
+        else
+            console.log(err);
+    })
+});
+
+app.post('/subjects/:id', (req, res) => {
+    var sql = 
+    mysqlConnection.query('DELETE FROM subjects WHERE id = ?', [req.params.id], (err, rows, fields) => {
         if (!err)
             res.send('Deleted successfully.');
         else
