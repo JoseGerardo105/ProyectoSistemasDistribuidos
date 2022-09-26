@@ -18,7 +18,6 @@ mysqlConnection.connect((err, res) => {
     if (mysqlConnection.state == 'connected')
         console.log('200 -  La conexion ha sido exitosa');
     else
-
         res.send('503 - servidor no disponible');
 });
 
@@ -52,10 +51,10 @@ app.get('/students/:id', (req, res) => {
 
 app.delete('/students/:id', (req, res) => {
     mysqlConnection.query('DELETE FROM students WHERE id = ?', [req.params.id], (err, rows, fields) => {
-        if (!id)
-        res.status(404).send('Error 404 - el estudiante a eliminar no fue encontrado');
+        if (rows.affectedRows)
+        res.status(200).send('Eliminado correctamente: ');
         else
-        res.status(200).send('200 - Eliminado correctamente: ');
+        res.status(404).send('el estudiante a eliminar no fue encontrado');
     })
 });
 
@@ -64,13 +63,15 @@ app.delete('/students/:id', (req, res) => {
 app.post('/students', (req, res) => {
     const params = req.body
     mysqlConnection.query('INSERT INTO students SET ?', params, (err, rows) => {
-        if (!err) {
+       if (!err) {
             res.status(200).send('201 - El estudiante se ha insertado correctamente');
         }else{
-            res.status(422).send('422 - Hay un dato faltante');
+            if (!params.id) {
+                res.status(422).send('422 - Datos incompletos');
+            } else {
+                res.status(200).send('201 - El ID ya existe');  
+            }
         }
-
-
     })
 });
 
@@ -111,10 +112,10 @@ app.get('/subjects/:id', (req, res) => {
 
 app.delete('/subjects/:id', (req, res) => {
     mysqlConnection.query('DELETE FROM subjects WHERE id = ?', [req.params.id], (err, rows, fields) => {
-        if (!err)
-        res.status(404).send('Error 404 - la materia a eliminar no fue encontrada');
+        if (rows.affectedRows)
+        res.status(200).send('Eliminado correctamente: ' );
         else
-        res.status(200).send('200 - Eliminado correctamente: ' );
+        res.status(404).send('la materia a eliminar no fue encontrada');
     })
 });
 
@@ -144,5 +145,5 @@ app.put('/subjects', (req, res) => {
             });
         else
             res.status(422).send('422 - Hay un dato faltante');
-    })
+    })
 });
