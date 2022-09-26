@@ -18,6 +18,7 @@ mysqlConnection.connect((err, res) => {
     if (mysqlConnection.state == 'connected')
         console.log('200 -  La conexion ha sido exitosa');
     else
+
         res.send('503 - servidor no disponible');
 });
 
@@ -55,25 +56,28 @@ app.delete('/students/:id', (req, res) => {
         res.status(200).send('Eliminado correctamente: ');
         else
         res.status(404).send('el estudiante a eliminar no fue encontrado');
-    })
+    })
 });
-
 
 
 app.post('/students', (req, res) => {
     const params = req.body
-    mysqlConnection.query('INSERT INTO students SET ?', params, (err, rows) => {
-       if (!err) {
-            res.status(200).send('201 - El estudiante se ha insertado correctamente');
-        }else{
-            if (!params.id) {
-                res.status(422).send('422 - Datos incompletos');
+    const {id, document_number, document_type, name, surname, state} = req.body
+    if(!id || !document_number || !document_type || !name || !surname || !state){
+        res.status(422).send('Datos incompletos');
+    } else {
+        mysqlConnection.query('INSERT INTO students SET ?', params, (err, rows) => {
+    
+            if (!err) {
+                res.status(200).send('El estudiante se ha insertado correctamente');
+                
             } else {
-                res.status(200).send('201 - El ID ya existe');  
+                res.status(406).send('Error insertando, debido a que el estudiante ya existe');
             }
-        }
-    })
+        })
+    }
 });
+
 
 app.put('/students', (req, res) => {
     let student = req.body;
@@ -116,21 +120,44 @@ app.delete('/subjects/:id', (req, res) => {
         res.status(200).send('Eliminado correctamente: ' );
         else
         res.status(404).send('la materia a eliminar no fue encontrada');
-    })
+    })
 });
+
 
 app.post('/subjects', (req, res) => {
     const params = req.body
-    mysqlConnection.query('INSERT INTO subjects SET ?', params, (err, rows) => {
-        if (err) {
-            res.status(422).send('422 - Hay un dato faltante');
+    const {id,code, name, credits,quotas,state} = req.body
+    if(!id || !code || !name || !credits || !quotas || !state){
+        res.status(422).send('Datos incompletos');
+    } else {
+        mysqlConnection.query('INSERT INTO subjects SET ?', params, (err, rows) => {
+        if  (!err) {
+            res.status(200).send('La materia se ha insertado correctamente');
         } else {
-            res.status(201).send('201 - Materia insertada exitosamente');
+            res.status(406).send('Error insertando, debido a que la materia ya existe');
         }
-
-
     })
+    }
 });
+
+app.post('/students', (req, res) => {
+    const params = req.body
+    const {id, document_number, document_type, name, surname, state} = req.body
+    if(!id || !document_number || !document_type || !name || !surname || !state){
+        res.status(422).send('Datos incompletos');
+    } else {
+        mysqlConnection.query('INSERT INTO students SET ?', params, (err, rows) => {
+            if (!err) {
+                res.status(200).send('El estudiante se ha insertado correctamente');
+                
+            } else {
+                res.status(406).send('Error insertando, debido a que el estudiante ya existe');
+            }
+        })
+    }
+});
+
+
 
 
 app.put('/subjects', (req, res) => {
@@ -145,5 +172,5 @@ app.put('/subjects', (req, res) => {
             });
         else
             res.status(422).send('422 - Hay un dato faltante');
-    })
+    })
 });
