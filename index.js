@@ -1,3 +1,4 @@
+/**
 const mysql = require('mysql');
 const express = require('express');
 const bodyparser = require('body-parser');
@@ -211,3 +212,5 @@ app.put('/inscription', (req, res) => {
             res.status(422).send('Hay un dato faltante');
     })
 });
+
+*/

@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,5 +7,34 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Post{
+model inscription {
+  id_student       Int
+  id_subject       Int
+  registrationDate DateTime @db.DateTime(0)
+  id               Int      @id @default(autoincrement())
+  students         students @relation(fields: [id_student], references: [id], onDelete: Cascade, map: "inscription_FK")
+  subjects         subjects @relation(fields: [id_subject], references: [id], onDelete: Cascade, map: "inscription_FK_1")
+
+  @@index([id_subject], map: "fk_student_id_idx")
+  @@index([id_student], map: "fk_student_id_idx1")
+}
+
+model students {
+  id              Int           @id
+  document_number String        @db.VarChar(10)
+  document_type   String        @db.Char(3)
+  name            String        @db.VarChar(45)
+  surname         String        @db.VarChar(45)
+  state           String        @db.VarChar(30)
+  inscription     inscription[]
+}
+
+model subjects {
+  id          Int           @id
+  code        String        @db.VarChar(10)
+  name        String        @db.VarChar(45)
+  credits     Int
+  quotas      Int
+  state       Int           @db.TinyInt
+  inscription inscription[]
 }
