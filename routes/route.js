@@ -1,8 +1,26 @@
+const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerUI = require('swagger-ui-express');
 const router = require('express').Router();
 const { PrismaClient } = require('@prisma/client')
 
 const prisma = new PrismaClient()
 
+
+/**
+ * @swagger
+ * /inscription:
+ *   get:
+ *     summary: Returns all inscriptions
+ *     tags: [Inscriptions]
+ *     responses:
+ *       200:
+ *         description: the list of the inscriptions
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ */
 router.get('/inscription', async (req, res, next) => {
     try {
         const inscription = await prisma.inscription.findMany({})

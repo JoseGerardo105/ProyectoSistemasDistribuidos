@@ -3,14 +3,14 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider = "sqlserver"
+  url      = env("CONNDBOAZURE")
 }
 
 model inscription {
   id_student       Int
   id_subject       Int
-  registrationDate DateTime @db.DateTime(0)
+  registrationDate DateTime @db.DateTime
   id               Int      @id @default(autoincrement())
   students         students @relation(fields: [id_student], references: [id], onDelete: Cascade, map: "inscription_FK")
   subjects         subjects @relation(fields: [id_subject], references: [id], onDelete: Cascade, map: "inscription_FK_1")
