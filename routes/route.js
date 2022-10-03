@@ -11,7 +11,7 @@ const prisma = new PrismaClient()
  * /inscription:
  *   get:
  *     summary: Returns all inscriptions
- *     tags: [Inscriptions]
+ *     tags: [Posts]
  *     responses:
  *       200:
  *         description: the list of the inscriptions
@@ -21,14 +21,16 @@ const prisma = new PrismaClient()
  *               type: array
  *               items:
  */
+
 router.get('/inscription', async (req, res, next) => {
     try {
         const inscription = await prisma.inscription.findMany({})
         res.json(inscription)
     } catch (error) {
-        next(error)
+        res.status(404).send('La inscripcion no existe');
     }
 })
+
 
 router.get('/inscription/:id_student', async (req, res, next) => {
     try {
@@ -67,7 +69,7 @@ router.delete('/inscription/:id', async (req, res, next) => {
         })
         res.json(deletedInscription)
     } catch (error) {
-        next(error)
+        res.status(404).send('La inscripcion a eliminar no fue encontrada');
     }
 })
 
@@ -88,6 +90,7 @@ router.patch('/inscription/:id', async (req, res, next) => {
 
 
 /**________________________________________________________________________________ */
+
 
 router.get('/students', async (req, res, next) => {
     try {
@@ -116,12 +119,15 @@ router.get('/students/:id', async (req, res, next) => {
 
 router.post('/students', async (req, res, next) => {
     try {
+
         const students = await prisma.students.create({
-            data: req.body,
+            data: req.body
         })
         res.json(students)
+
     } catch (error) {
         next(error)
+
     }
 })
 

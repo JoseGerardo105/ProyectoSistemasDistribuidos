@@ -11,17 +11,14 @@ model inscription {
   id_student       Int
   id_subject       Int
   registrationDate DateTime @db.DateTime
-  id               Int      @id @default(autoincrement())
-  students         students @relation(fields: [id_student], references: [id], onDelete: Cascade, map: "inscription_FK")
-  subjects         subjects @relation(fields: [id_subject], references: [id], onDelete: Cascade, map: "inscription_FK_1")
-
-  @@index([id_subject], map: "fk_student_id_idx")
-  @@index([id_student], map: "fk_student_id_idx1")
+  id               Int      @id(map: "inscription_PK") @default(autoincrement())
+  subjects         subjects @relation(fields: [id_subject], references: [id], onDelete: Cascade, map: "inscription_FK")
+  students         students @relation(fields: [id_student], references: [id], onDelete: Cascade, map: "inscription_FK_1")
 }
 
 model students {
-  id              Int           @id
-  document_number String        @db.VarChar(10)
+  id              Int           @id(map: "students_PK")
+  document_number String        @unique(map: "students_UN") @db.VarChar(15)
   document_type   String        @db.Char(3)
   name            String        @db.VarChar(45)
   surname         String        @db.VarChar(45)
@@ -30,7 +27,7 @@ model students {
 }
 
 model subjects {
-  id          Int           @id
+  id          Int           @id(map: "subjects_PK")
   code        String        @db.VarChar(10)
   name        String        @db.VarChar(45)
   credits     Int
