@@ -92,7 +92,7 @@ router.post('/inscription', async (req, res, next) => {
         const inscription = await prisma.inscription.create({
             data: req.body,
         })
-        res.status(200).send('La  se ha insertado correctamente'); 
+        res.status(200).send('La inscripcion se ha insertado correctamente'); 
     }catch (error) {  
         if (error.code == "P2003") {
             res.status(409).send('El estudiante o la materia a inscribir no existe');     
@@ -222,12 +222,11 @@ router.get('/students/:id', async (req, res, next) => {
                 id: Number(id),
             }
         })
-        if (inscription.length == 0) {
+        if (students.length == 0) {
             res.status(404).send('El estudiante no existe');
         } else {
-            res.json(inscription);
+            res.json(students)
         }
-        res.json(students)
     } catch (error) {
         next(error);
     }
@@ -383,7 +382,7 @@ router.get('/subjects/:id', async (req, res, next) => {
                 id: Number(id),
             }
         })
-        if (inscription.length == 0) {
+        if (subjects.length == 0) {
             res.status(404).send('La asignatura no existe');
         } else {
             res.json(subjects)
