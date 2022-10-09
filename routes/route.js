@@ -108,6 +108,8 @@ router.get('/inscription', async (req, res, next) => {
  * @swagger
  * /inscription/{id_student}:
  *   get:
+ *     summary: Returns student inscriptions
+ *     tags: [inscription]
  *     parameters:
  *      - in: path
  *        name: id_student
@@ -218,6 +220,8 @@ router.delete('/inscription/:id', async (req, res, next) => {
  * @swagger
  * /inscription/{id}:
  *   patch:
+ *     summary: Update inscription with id
+ *     tags: [inscription]
  *     parameters:
  *      - in: path
  *        name: id
@@ -260,7 +264,7 @@ router.patch('/inscription/:id', async (req, res, next) => {
  * /students:
  *   get:
  *     summary: Returns all students
- *     tags: [Students]
+ *     tags: [students]
  *     responses:
  *       200:
  *         description: the list of the students
@@ -287,6 +291,8 @@ router.get('/students', async (req, res, next) => {
  * @swagger
  * /students/{id}:
  *   get:
+ *     summary: Returns student with id
+ *     tags: [students]
  *     parameters:
  *      - in: path
  *        name: id
@@ -323,7 +329,7 @@ router.get('/students/:id', async (req, res, next) => {
  * /students:
  *   post:
  *     summary: Create a new student
- *     tags: [Students]
+ *     tags: [students]
  *     requestBody:
  *       required: true
  *       content:
@@ -357,7 +363,7 @@ router.post('/students', async (req, res, next) => {
  * /students/{id}:
  *   delete:
  *     summary: Returns if the student is eliminated or not
- *     tags: [Students]
+ *     tags: [students]
  *     parameters:
  *       - in: path
  *         name: id
@@ -392,6 +398,8 @@ router.delete('/students/:id', async (req, res, next) => {
  * @swagger
  * /students/{id}:
  *   patch:
+ *     summary: Update student with id
+ *     tags: [students]
  *     parameters:
  *      - in: path
  *        name: id
@@ -454,6 +462,8 @@ router.get('/subjects', async (req, res, next) => {
  * @swagger
  * /subjects/{id}:
  *   get:
+ *     summary: Returns subject with id
+ *     tags: [subjects]
  *     parameters:
  *      - in: path
  *        name: id
@@ -561,6 +571,8 @@ router.delete('/subjects/:id', async (req, res, next) => {
  * @swagger
  * /subjects/{id}:
  *   patch:
+ *     summary: Update student with id
+ *     tags: [subjects]
  *     parameters:
  *      - in: path
  *        name: id
