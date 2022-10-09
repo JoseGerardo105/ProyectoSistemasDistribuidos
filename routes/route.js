@@ -6,12 +6,81 @@ const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
 
+
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *    Students:
+ *      type: object
+ *      properties:
+ *        id:
+ *              type: integer
+ *        document_number:
+ *              type: string           
+ *        document_type:
+ *              type: string
+ *        name:
+ *              type: string           
+ *        surname:
+ *              type: string           
+ *        state:
+ *              type: string
+ *      required:
+ *        - id
+ *        - document_number
+ *        - document_type
+ *        - name
+ *        - surname
+ *        - state
+ *     
+ *    subjects:
+ *      type: object
+ *      properties:
+ *        id:
+ *              type: integer
+ *        code:
+ *              type: string 
+ *        name:
+ *              type: string           
+ *        credits:
+ *              type: integer           
+ *        quotas:
+ *              type: integer           
+ *        state:
+ *              type: integer
+ *      required:
+ *        - id
+ *        - code
+ *        - name
+ *        - credits
+ *        - quotas
+ *        - state
+ * 
+ *    inscription:
+ *      type: object
+ *      properties:
+ *        id_student:
+ *              type: integer  
+ *        id_subject:
+ *              type: integer
+ *        registrationDate:
+ *                 type: integer
+ *                 format: date 
+ *      required:
+ *        - id_student
+ *        - id_subject
+ *        - registrationDate 
+ * 
+ */
+
+
 /**
  * @swagger
  * /inscription:
  *   get:
  *     summary: Returns all inscriptions
- *     tags: [Posts]
+ *     tags: [inscription]
  *     responses:
  *       200:
  *         description: the list of the inscriptions
@@ -40,7 +109,7 @@ router.get('/inscription', async (req, res, next) => {
  * /inscription/:id_student:
  *   get:
  *     summary: Returns inscriptions from one student
- *     tags: [Posts]
+ *     tags: [inscription]
  *     responses:
  *       200:
  *         description: a list of inscriptions according to the student id 
@@ -74,23 +143,25 @@ router.get('/inscription/:id_student', async (req, res, next) => {
  * @swagger
  * /inscription:
  *   post:
- *     summary: Returns an boolean state; if that inscription could be inscripted or not
- *     tags: [Posts]
+ *     summary: Create a new inscription
+ *     tags: [inscription]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             $ref: '#/components/schemas/inscription'
  *     responses:
  *       200:
- *         description: an boolean state according to the inscription status 
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
+ *         description: new inscription
  */
 
 
 router.post('/inscription', async (req, res, next) => {
     try {
         const inscription = await prisma.inscription.create({
-            data: req.body,
+            data: req.body
         })
         res.status(200).send('La inscripcion se ha insertado correctamente'); 
     }catch (error) {  
@@ -105,10 +176,16 @@ router.post('/inscription', async (req, res, next) => {
 
 /**
  * @swagger
- * /inscription/:id:
+ * /inscription/{id}:
  *   delete:
- *     summary: Returns if that inscription is eliminated or not
- *     tags: [Posts]
+ *     summary: Returns if the student is eliminated or not
+ *     tags: [inscription]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
  *     responses:
  *       200:
  *         description: an erase status 
@@ -140,7 +217,7 @@ router.delete('/inscription/:id', async (req, res, next) => {
  * /inscription/:id:
  *   patch:
  *     summary: Returns an inscripction actualization status
- *     tags: [Posts]
+ *     tags: [inscription]
  *     responses:
  *       200:
  *         description: an inscription actualization status 
@@ -175,7 +252,7 @@ router.patch('/inscription/:id', async (req, res, next) => {
  * /students:
  *   get:
  *     summary: Returns all students
- *     tags: [Posts]
+ *     tags: [Students]
  *     responses:
  *       200:
  *         description: the list of the students
@@ -203,7 +280,7 @@ router.get('/students', async (req, res, next) => {
  * /students/:id:
  *   get:
  *     summary: Returns an student data
- *     tags: [Posts]
+ *     tags: [Students]
  *     responses:
  *       200:
  *         description: a data of students according to the id 
@@ -237,20 +314,20 @@ router.get('/students/:id', async (req, res, next) => {
  * @swagger
  * /students:
  *   post:
- *     summary: Returns an boolean state; if that student exist or not
- *     tags: [Posts]
+ *     summary: Create a new student
+ *     tags: [Students]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             $ref: '#/components/schemas/Students'
  *     responses:
  *       200:
- *         description: an boolean state according if the student exists in the db 
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
+ *         description: new Student
+ *     
  */
-
-
-
 router.post('/students', async (req, res, next) => {
     try {
         const students = await prisma.students.create({
@@ -269,10 +346,16 @@ router.post('/students', async (req, res, next) => {
 
 /**
  * @swagger
- * /students/:id:
+ * /students/{id}:
  *   delete:
  *     summary: Returns if the student is eliminated or not
- *     tags: [Posts]
+ *     tags: [Students]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
  *     responses:
  *       200:
  *         description: an erase status 
@@ -301,16 +384,26 @@ router.delete('/students/:id', async (req, res, next) => {
  * @swagger
  * /students/:id:
  *   patch:
- *     summary: Returns an student actualization status
- *     tags: [Posts]
+ *     summary: Update a student
+ *     tags: [Students]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             $ref: '#/components/schemas/Students'
  *     responses:
  *       200:
- *         description: an student actualization status 
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
+ *         description: new Student
+ *     
+ *    
  */
 
 router.patch('/students/:id', async (req, res, next) => {
@@ -327,18 +420,13 @@ router.patch('/students/:id', async (req, res, next) => {
         res.status(422).send('Hay un error a la hora de actualizar el estudiante');
     }
 })
-
-
-
 /**________________________________________________________________________________ */
-
-
 /**
  * @swagger
  * /subjects:
  *   get:
  *     summary: Returns all subjects
- *     tags: [Posts]
+ *     tags: [subjects]
  *     responses:
  *       200:
  *         description: the list of the subjects
@@ -363,7 +451,7 @@ router.get('/subjects', async (req, res, next) => {
  * /subjects/:id:
  *   get:
  *     summary: Returns data from an specific subject
- *     tags: [Posts]
+ *     tags: [subjects]
  *     responses:
  *       200:
  *         description: a subject data according to the id
@@ -394,31 +482,36 @@ router.get('/subjects/:id', async (req, res, next) => {
 
 /**
  * @swagger
- * /inscription:
+ * /subject:
  *   post:
- *     summary: Returns an boolean state; if that subject could be inserted in the db or not
- *     tags: [Posts]
+ *     summary: Create a new subject
+ *     tags: [subjects]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             $ref: '#/components/schemas/subjects'
  *     responses:
  *       200:
- *         description: an boolean state according to the subject insertion status 
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
+ *         description: new subjects
+ *     
  */
+ 
 
-router.post('/subjects', async (req, res, next) => {
+ router.post('/subject', async (req, res, next) => {
     try {
-        const subjects = await prisma.subjects.create({
-            data: req.body,
+        const students = await prisma.subjects.create({
+            data: req.body
         })
-        res.status(200).send('La asignatura se ha insertado correctamente');
+        res.status(200).send('Se ha insertado correctamente'); 
+
     } catch (error) {
         if (!error.code) {
             res.status(422).send('Datos incompletos');
         } else {   
-            res.status(409).send('La materia a inscribir ya existe');
+            res.status(409).send(' ya existe');
         }
     }
 })
@@ -426,10 +519,16 @@ router.post('/subjects', async (req, res, next) => {
 
 /**
  * @swagger
- * /subjects/:id:
+ * /subjects/{id}:
  *   delete:
- *     summary: Returns if the subject is eliminated or not
- *     tags: [Posts]
+ *     summary: Returns if the student is eliminated or not
+ *     tags: [subjects]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
  *     responses:
  *       200:
  *         description: an erase status 
@@ -459,7 +558,7 @@ router.delete('/subjects/:id', async (req, res, next) => {
  * /subjects/:id:
  *   patch:
  *     summary: Returns an subject actualization status
- *     tags: [Posts]
+ *     tags: [subjects]
  *     responses:
  *       200:
  *         description: an subject actualization status 
