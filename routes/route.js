@@ -106,18 +106,20 @@ router.get('/inscription', async (req, res, next) => {
 
 /**
  * @swagger
- * /inscription/:id_student:
+ * /inscription/{id_student}:
  *   get:
- *     summary: Returns inscriptions from one student
- *     tags: [inscription]
+ *     parameters:
+ *      - in: path
+ *        name: id_student
+ *        required: true
+ *        type: int
+ *        description: The inscription ID and the data.
+ *     description: Get a list of inscriptions by id 
  *     responses:
  *       200:
- *         description: a list of inscriptions according to the student id 
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
+ *         description: Returns the requested inscription
+ *       500:
+ *         description: Error
  */
 
 
@@ -214,18 +216,24 @@ router.delete('/inscription/:id', async (req, res, next) => {
 
 /**
  * @swagger
- * /inscription/:id:
+ * /inscription/{id}:
  *   patch:
- *     summary: Returns an inscripction actualization status
- *     tags: [inscription]
+ *     parameters:
+ *      - in: path
+ *        name: id
+ *        required: true
+ *        type: Int
+ *        description: The inscription ID.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             $ref: '#/components/schemas/inscription'
  *     responses:
- *       200:
- *         description: an inscription actualization status 
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
+ *       201:
+ *         description: Updated
  */
 
 router.patch('/inscription/:id', async (req, res, next) => {
@@ -277,18 +285,18 @@ router.get('/students', async (req, res, next) => {
 
 /**
  * @swagger
- * /students/:id:
+ * /students/{id}:
  *   get:
- *     summary: Returns an student data
- *     tags: [Students]
+ *     parameters:
+ *      - in: path
+ *        name: id
+ *        required: true
+ *        type: string
+ *        description: The student ID and his/her data.
+ *     description: Get a student by id
  *     responses:
  *       200:
- *         description: a data of students according to the id 
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
+ *         description: Returns the requested student
  */
 
 router.get('/students/:id', async (req, res, next) => {
@@ -382,16 +390,14 @@ router.delete('/students/:id', async (req, res, next) => {
 
 /**
  * @swagger
- * /students/:id:
+ * /students/{id}:
  *   patch:
- *     summary: Update a student
- *     tags: [Students]
  *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: integer
- *         required: true
+ *      - in: path
+ *        name: id
+ *        required: true
+ *        type: Int
+ *        description: The student ID.
  *     requestBody:
  *       required: true
  *       content:
@@ -400,10 +406,8 @@ router.delete('/students/:id', async (req, res, next) => {
  *             type: object
  *             $ref: '#/components/schemas/Students'
  *     responses:
- *       200:
- *         description: new Student
- *     
- *    
+ *       201:
+ *         description: Updated
  */
 
 router.patch('/students/:id', async (req, res, next) => {
@@ -448,18 +452,18 @@ router.get('/subjects', async (req, res, next) => {
 
 /**
  * @swagger
- * /subjects/:id:
+ * /subjects/{id}:
  *   get:
- *     summary: Returns data from an specific subject
- *     tags: [subjects]
+ *     parameters:
+ *      - in: path
+ *        name: id
+ *        required: true
+ *        type: string
+ *        description: The subjects ID and the data of the subject.
+ *     description: Get a student by id
  *     responses:
  *       200:
- *         description: a subject data according to the id
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
+ *         description: Returns the requested subject
  */
 
 router.get('/subjects/:id', async (req, res, next) => {
@@ -555,18 +559,24 @@ router.delete('/subjects/:id', async (req, res, next) => {
 
 /**
  * @swagger
- * /subjects/:id:
+ * /subjects/{id}:
  *   patch:
- *     summary: Returns an subject actualization status
- *     tags: [subjects]
+ *     parameters:
+ *      - in: path
+ *        name: id
+ *        required: true
+ *        type: Int
+ *        description: The subject ID.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             $ref: '#/components/schemas/subjects'
  *     responses:
- *       200:
- *         description: an subject actualization status 
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
+ *       201:
+ *         description: Updated
  */
 
 router.patch('/subjects/:id', async (req, res, next) => {
