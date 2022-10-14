@@ -79,6 +79,7 @@ const prisma = new PrismaClient()
  * @swagger
  * /inscription:
  *   get:
+ * 
  *     summary: Returns all inscriptions
  *     tags: [inscription]
  *     responses:
