@@ -8,7 +8,7 @@ datasource db {
 }
 
 model inscription {
-  id_student       Int
+  id_student       String   @db.VarChar(10)
   id_subject       Int
   registrationDate DateTime @db.DateTime
   id               Int      @id(map: "inscription_PK") @default(autoincrement())
@@ -17,7 +17,7 @@ model inscription {
 }
 
 model students {
-  id              Int           @id(map: "students_PK")
+  id              String        @id(map: "students_PK") @db.VarChar(10)
   document_number String        @unique(map: "students_UN") @db.VarChar(15)
   document_type   String        @db.Char(3)
   name            String        @db.VarChar(45)

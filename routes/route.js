@@ -2,9 +2,13 @@ const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUI = require('swagger-ui-express');
 const router = require('express').Router();
 const { PrismaClient } = require('@prisma/client')
-
+const {BlobServiceClient} = require('@azure/storage-blob');
+const {config } = require("dotenv");
+config();
+const multer = require("multer");
 const prisma = new PrismaClient()
-
+const upload = multer()
+const blobService= BlobServiceClient.fromConnectionString(process.env.AZURE_STORAGE_CONNECTION_STRING);
 
 
 /**
@@ -343,18 +347,25 @@ router.get('/students/:id', async (req, res, next) => {
  *         description: new Student
  *     
  */
-router.post('/students', async (req, res, next) => {
+router.post('/students',upload.single('file'), async (req, res, next) => {
+  const { originalname, buffer} =req.file;
+  console.log(originalname);
+  const containerClient= blobService.getContainerClient("imagenes");
+   await containerClient.getBlockBlobClient(originalname).uploadData(buffer);
     try {
-        const students = await prisma.students.create({
-            data: req.body
+    const students = await prisma.students.create({
+             data: req.body
+            
         })
         res.status(200).send('El estudiante se ha insertado correctamente'); 
-
     } catch (error) {
         if (!error.code) {
             res.status(422).send('Datos incompletos');
+            console.log(error)
         } else {   
             res.status(409).send('El estudiante a inscribir ya existe');
+
+
         }
     }
 })
@@ -515,7 +526,7 @@ router.get('/subjects/:id', async (req, res, next) => {
  */
  
 
- router.post('/subject', async (req, res, next) => {
+ router.post('/subjects', async (req, res, next) => {
     try {
         const students = await prisma.subjects.create({
             data: req.body

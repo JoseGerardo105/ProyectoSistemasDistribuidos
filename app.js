@@ -26,7 +26,7 @@ const options = {
 
         servers: [
             {
-                url: "http://studentsdistri.azurewebsites.net",
+                url: "http://localhost:3000",
                 description: "My API Documentation",
             },
         ],
@@ -67,4 +67,4 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`@ http://studentsdistri.azurewebsites.net`));
+app.listen(PORT, () => console.log(`@ http://localhost:3000`));
