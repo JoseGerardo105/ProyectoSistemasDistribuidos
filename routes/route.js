@@ -135,7 +135,7 @@ router.get('/inscription/:id_student', async (req, res, next) => {
         const { id_student } = req.params
         const inscription = await prisma.inscription.findMany({
             where: {
-                id_student: Number(id_student),
+                id_student: String(id_student),
             }
         })
         if (inscription.length == 0) {
@@ -315,7 +315,7 @@ router.get('/students/:id', async (req, res, next) => {
         const { id } = req.params
         const students = await prisma.students.findMany({
             where: {
-                id: Number(id),
+                id: String(id),
             }
         })
         if (students.length == 0) {
@@ -397,7 +397,7 @@ router.delete('/students/:id', async (req, res, next) => {
         const { id } = req.params
         const deletedstudents = await prisma.students.delete({
             where: {
-                id: Number(id),
+                id: String(id),
             }
         })
         res.status(200).send('Eliminado correctamente');
@@ -435,7 +435,7 @@ router.patch('/students/:id', async (req, res, next) => {
         const { id } = req.params
         const students = await prisma.students.update({
             where: {
-                id: Number(id),
+                id: String(id),
             },
             data: req.body
         })
