@@ -19,7 +19,7 @@ const blobService= BlobServiceClient.fromConnectionString(process.env.AZURE_STOR
  *      type: object
  *      properties:
  *        id:
- *              type: integer
+ *              type: string
  *        document_number:
  *              type: string           
  *        document_type:
@@ -65,7 +65,7 @@ const blobService= BlobServiceClient.fromConnectionString(process.env.AZURE_STOR
  *      type: object
  *      properties:
  *        id_student:
- *              type: integer  
+ *              type: string  
  *        id_subject:
  *              type: integer
  *        registrationDate:
@@ -119,7 +119,7 @@ router.get('/inscription', async (req, res, next) => {
  *      - in: path
  *        name: id_student
  *        required: true
- *        type: int
+ *        type: string
  *        description: The inscription ID and the data.
  *     description: Get a list of inscriptions by id 
  *     responses:
@@ -351,7 +351,7 @@ router.post('/students',upload.single('file'), async (req, res, next) => {
   const { originalname, buffer} =req.file;
   console.log(originalname);
   const containerClient= blobService.getContainerClient("imagenes");
-   await containerClient.getBlockBlobClient(originalname).uploadData(buffer);
+   await containerClient.getBlockBlobzClient(originalname).uploadData(buffer);
     try {
     const students = await prisma.students.create({
              data: req.body
@@ -380,7 +380,7 @@ router.post('/students',upload.single('file'), async (req, res, next) => {
  *       - in: path
  *         name: id
  *         schema:
- *           type: integer
+ *           type: string
  *         required: true
  *     responses:
  *       200:
@@ -416,7 +416,7 @@ router.delete('/students/:id', async (req, res, next) => {
  *      - in: path
  *        name: id
  *        required: true
- *        type: Int
+ *        type: string
  *        description: The student ID.
  *     requestBody:
  *       required: true
