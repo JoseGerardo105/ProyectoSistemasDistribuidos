@@ -23,6 +23,7 @@ model students {
   name            String        @db.VarChar(45)
   surname         String        @db.VarChar(45)
   state           String        @db.VarChar(30)
+  imagen          String?       @db.VarChar(250)
   inscription     inscription[]
 }
 
