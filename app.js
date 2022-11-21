@@ -1,14 +1,25 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser')
+const dotenv = require('dotenv')
 const createError = require('http-errors');
 const morgan = require('morgan');
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUI = require('swagger-ui-express');
 require('dotenv').config();
-
 const app = express();
-app.use(express.urlencoded({ extended: false }));
+
+
+
+app.set('view engine', 'ejs')
+app.use(express.static('public'))
+
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
 app.use(morgan('dev'));
+dotenv.config({path: './.env'})
+app.use(cookieParser())
+
 const options = {
     definition: {
         openapi: "3.0.0",
@@ -47,12 +58,14 @@ app.use((req, res, next) => {
     next();
 });
 
-
-app.get('/', async (req, res, next) => {
-    res.send({ message: 'funciona! 7u7' });
-});
-
 app.use('/', require('./routes/route'));
+
+//Para eliminar la cache 
+app.use(function(req, res, next) {
+    if (!req.user)
+        res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    next();
+});
 
 app.use((req, res, next) => {
     next(createError.NotFound());

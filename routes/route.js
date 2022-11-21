@@ -1,14 +1,43 @@
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUI = require('swagger-ui-express');
+const express = require('express')
 const router = require('express').Router();
 const { PrismaClient } = require('@prisma/client')
-const {BlobServiceClient} = require('@azure/storage-blob');
-const {config } = require("dotenv");
+const { BlobServiceClient } = require('@azure/storage-blob');
+const { config } = require("dotenv");
 config();
 const multer = require("multer");
 const prisma = new PrismaClient()
 const upload = multer()
-const blobService= BlobServiceClient.fromConnectionString(process.env.AZURE_STORAGE_CONNECTION_STRING);
+const blobService = BlobServiceClient.fromConnectionString(process.env.AZURE_STORAGE_CONNECTION_STRING);
+const authController = require('../controllers/authController')
+const responseTime = require("response-time")
+router.use(responseTime())
+const redis = require("redis");
+const { promisify } = require('util')
+const redisClient = redis.createClient({
+    host: 'distri.redis.cache.windows.net',
+    port: 6379,
+    legacyMode: true
+})
+redisClient.connect()
+const GET_ASYNC = promisify(redisClient.get).bind(redisClient)
+const SET_ASYNC = promisify(redisClient.set).bind(redisClient)
+
+
+router.get('/', authController.isAuthenticated, (req, res) => {
+    res.render('index', { user: req.user })
+})
+router.get('/login', (req, res) => {
+    res.render('login', { alert: false })
+})
+router.get('/register', (req, res) => {
+    res.render('register')
+})
+
+router.post('/register', authController.register)
+router.post('/login', authController.login)
+router.get('/logout', authController.logout)
 
 
 /**
@@ -77,6 +106,25 @@ const blobService= BlobServiceClient.fromConnectionString(process.env.AZURE_STOR
  *        - registrationDate 
  * 
  */
+router.get('/inscripted-students', async (req, res, next) => {
+    try {
+        const reply = await GET_ASYNC("Estudiantes_Inscritos")
+        if (reply) return res.json(JSON.parse(reply));
+
+        const inscripted = await prisma.$queryRaw`select count(id_student) as cantidad_estudiantes_inscritos ,
+        id_subject as id_asignatura,s.name as asignatura from inscription i 
+        join subjects s on i.id_subject = s.id group by id_subject,s.name, id_subject;`
+        
+        await SET_ASYNC("Estudiantes_Inscritos", JSON.stringify(inscripted))
+        redisClient.expire("Estudiantes_Inscritos", 60);
+
+        res.json(inscripted)
+    } catch (error) {
+        console.log(error)
+    }
+
+})
+
 
 
 /**
@@ -101,7 +149,7 @@ router.get('/inscription', async (req, res, next) => {
         const inscription = await prisma.inscription.findMany({})
         if (next.length) {
             res.json(inscription)
-        }else{
+        } else {
             res.status(204).send('204 - No hay elementos para mostrar');
         }
     } catch (error) {
@@ -172,14 +220,14 @@ router.post('/inscription', async (req, res, next) => {
         const inscription = await prisma.inscription.create({
             data: req.body
         })
-        res.status(200).send('La inscripcion se ha insertado correctamente'); 
-    }catch (error) {  
+        res.status(200).send('La inscripcion se ha insertado correctamente');
+    } catch (error) {
         if (error.code == "P2003") {
-            res.status(409).send('El estudiante o la materia a inscribir no existe');     
+            res.status(409).send('El estudiante o la materia a inscribir no existe');
         } else {
             res.status(422).send('Datos incompletos');
-        } 
-    
+        }
+
     }
 })
 
@@ -213,11 +261,11 @@ router.delete('/inscription/:id', async (req, res, next) => {
                 id: Number(id),
             }
         })
-    //    res.json(deletedInscription)
+        //    res.json(deletedInscription)
         res.status(200).send('Eliminado correctamente');
     } catch (error) {
         res.status(404).send('La inscripcion a eliminar no fue encontrada');
-    //    next(error);
+        //    next(error);
     }
 })
 
@@ -347,22 +395,29 @@ router.get('/students/:id', async (req, res, next) => {
  *         description: new Student
  *     
  */
-router.post('/students',upload.single('file'), async (req, res, next) => {
-  const { originalname, buffer} =req.file;
-  console.log(originalname);
-  const containerClient= blobService.getContainerClient("imagenes");
-   await containerClient.getBlockBlobClient(originalname).uploadData(buffer);
+router.post('/students', upload.single('myFile'), async (req, res, next) => {
+    const { originalname, buffer } = req.file;
+    console.log(originalname);
+    const containerClient = blobService.getContainerClient("imagenes");
+    await containerClient.getBlockBlobClient(originalname).uploadData(buffer);
     try {
-    const students = await prisma.students.create({
-             data: req.body
-            
-        })
-        res.status(200).send('El estudiante se ha insertado correctamente'); 
+        const id = req.body.id
+        const document_number = req.body.document_number
+        const document_type = req.body.document_type
+        const name = req.body.name
+        const surname = req.body.surname
+        const state = req.body.state
+        let imagen = req.body.imagen
+        BLOBIMAGE = "https://imagenesdistri.blob.core.windows.net/imagenes/"
+        imagen = BLOBIMAGE + originalname
+        console.log(imagen)
+        const students = await prisma.students.create({ data: { id, document_number, document_type, name, surname, state, imagen } })
+        res.status(200).send('El estudiante se ha insertado correctamente');
     } catch (error) {
         if (!error.code) {
             res.status(422).send('Datos incompletos');
             console.log(error)
-        } else {   
+        } else {
             res.status(409).send('El estudiante a inscribir ya existe');
 
 
@@ -524,19 +579,19 @@ router.get('/subjects/:id', async (req, res, next) => {
  *         description: new subjects
  *     
  */
- 
 
- router.post('/subjects', async (req, res, next) => {
+
+router.post('/subjects', async (req, res, next) => {
     try {
         const students = await prisma.subjects.create({
             data: req.body
         })
-        res.status(200).send('Se ha insertado correctamente'); 
+        res.status(200).send('Se ha insertado correctamente');
 
     } catch (error) {
         if (!error.code) {
             res.status(422).send('Datos incompletos');
-        } else {   
+        } else {
             res.status(409).send(' ya existe');
         }
     }

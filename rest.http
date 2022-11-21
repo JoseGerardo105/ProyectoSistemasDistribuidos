@@ -1,3 +1,6 @@
+### get inscripted-students per subject
+GET http://localhost:3000/inscripted-students
+
 ### get inscription 
 GET http://localhost:3000/inscription
 

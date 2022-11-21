@@ -36,3 +36,10 @@ model subjects {
   state       Int           @db.TinyInt
   inscription inscription[]
 }
+
+model users {
+  id   Int     @id(map: "users_PK") @unique(map: "users_UN") @default(autoincrement())
+  user String? @db.VarChar(50)
+  name String? @db.VarChar(100)
+  pass String? @db.VarChar(255)
+}
