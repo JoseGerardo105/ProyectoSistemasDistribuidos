@@ -10,11 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@azure/storage-blob": "^12.11.0",
-    "@prisma/client": "^4.4.0",
+    "@azure/storage-blob": "^12.12.0",
+    "@prisma/client": "^4.6.1",
     "bcryptjs": "^2.4.3",
     "bluebird": "^3.7.2",
-    "body-parser": "^1.20.0",
+    "body-parser": "^1.20.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
@@ -23,7 +23,7 @@
     "express": "^4.18.2",
     "express-session": "^1.17.3",
     "generate": "^0.14.0",
-    "http-errors": "^1.8.1",
+    "http-errors": "^2.0.0",
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
     "mssql": "^9.0.1",
@@ -32,12 +32,12 @@
     "response-time": "^2.3.2",
     "sqlserver": "0.0.2-security",
     "swagger-jsdoc": "^6.2.5",
-    "swagger-ui-express": "^4.5.0",
+    "swagger-ui-express": "^4.6.0",
     "utils": "^0.3.1",
     "view": "^1.1.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.20",
-    "prisma": "^4.6.0"
+    "prisma": "^4.6.1"
   }
 }

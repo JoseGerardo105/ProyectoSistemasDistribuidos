@@ -16,8 +16,8 @@ router.use(responseTime())
 const redis = require("redis");
 const { promisify } = require('util')
 const redisClient = redis.createClient({
-    host: 'distri.redis.cache.windows.net',
-    port: 6379,
+    url: "rediss://" + process.env.REDISCACHEHOSTNAME + ":6380",
+    password: process.env.REDISCACHEKEY,
     legacyMode: true
 })
 redisClient.connect()
@@ -114,7 +114,7 @@ router.get('/inscripted-students', async (req, res, next) => {
         const inscripted = await prisma.$queryRaw`select count(id_student) as cantidad_estudiantes_inscritos ,
         id_subject as id_asignatura,s.name as asignatura from inscription i 
         join subjects s on i.id_subject = s.id group by id_subject,s.name, id_subject;`
-        
+
         await SET_ASYNC("Estudiantes_Inscritos", JSON.stringify(inscripted))
         redisClient.expire("Estudiantes_Inscritos", 60);
 
